@@ -4,10 +4,11 @@
 #variables!
 import pygame
 import random
+import os
 
-WIDTH = 1600
+WIDTH = 600
 HEIGHT = 800
-FPS = 30
+FPS = 100
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -19,20 +20,26 @@ PINK = (255,0,255)
 CYAN = (0,255,255)
 
 class Player(pygame.sprite.Sprite):
-  def __init__(self):
+  def __init__ (self):
     pygame.sprite.Sprite.__init__(self)
-    self.image = pygame.Surface((50,50))
-    self.image.fill(RED)
+    self.image = player_img
+    self.image.set_colorkey(BLACK)
     self.rect = self.image.get_rect()
     self.rect.center = (WIDTH/2,HEIGHT/2)
+    self.xDirection = 1
+    self.yDirection = 1
 
   def update(self):
-    self.rect.x += 1
-    self.rect.y -= 1
-    if self.rect.left > WIDTH:
-      self.rect.right = 0
-    if self.rect.bottom < 0:
-      self.rect.top = HEIGHT
+    self.rect.x += self.xDirection
+    self.rect.y += self.yDirection
+    if self.rect.right == WIDTH and self.xDirection == 1 :
+      self.xDirection = -1
+    if self.rect.left == 0 and self.xDirection == -1:
+      self.xDirection = 1
+    if self.rect.bottom == HEIGHT and self.yDirection == 1:
+      self.yDirection = -1
+    if self.rect.top == 0 and self.yDirection == -1:
+      self.yDirection = 1
 
 # Beginning!
 
@@ -40,11 +47,20 @@ pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("pygame template")
+
+game_folder = os.path.dirname(__file__)
+asset_folder = os.path.join(game_folder, 'asset')
+player_img = pygame.image.load(os.path.join(asset_folder,'flower.png')).convert()
+
+print("game folder:", game_folder)
+print("asset folder:", asset_folder)
+print("image name:", os.path.join(asset_folder,'flower.png'))
+
 clock = pygame.time.Clock()
 allSprites = pygame.sprite.Group()
 
-player1 = Player()
-allSprites.add(player1)
+player2 = Player()
+allSprites.add(player2)
 
 # Game loop!
 
@@ -59,7 +75,7 @@ while running:
   allSprites.update()
 
   #draw
-  screen.fill(BLACK)
+  screen.fill(BLUE)
   allSprites.draw(screen)
   pygame.display.flip()
 
